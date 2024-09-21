@@ -5,9 +5,16 @@ import { Brush, ChevronsLeftRight, UserPen } from "lucide-react";
 type BadgeProps = {
   userType: UserType;
   className?: string;
+  size?: number;
+  iconSize?: number;
 };
 
-export default function Badge({ userType, className }: BadgeProps) {
+export default function Badge({
+  userType,
+  className,
+  size = 30,
+  iconSize = 18,
+}: BadgeProps) {
   const icon: Record<UserType, React.ElementType> = {
     designer: Brush,
     developer: ChevronsLeftRight,
@@ -29,13 +36,14 @@ export default function Badge({ userType, className }: BadgeProps) {
 
   return (
     <div
+      style={{ width: `${size}px`, height: `${size}px` }}
       className={cn(
-        "badge p-1.5 w-[30px] aspect-square rounded-full flex items-center justify-center",
+        `badge p-1.5 rounded-full flex items-center justify-center`,
         backgroundColor[userType],
         className
       )}
     >
-      <Icon size={18} color={color[userType]} />
+      <Icon size={iconSize} color={color[userType]} />
     </div>
   );
 }
