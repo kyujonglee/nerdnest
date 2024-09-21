@@ -12,7 +12,7 @@ export default function Categories() {
           카테고리별 질문과 답변을 확인해보세요!
         </h3>
 
-        <div className="mt-12 flex items-center gap-6 flex-wrap">
+        <div className="mt-12 flex items-center justify-around flex-wrap">
           {CATEGORIES.map((category) => (
             <Link
               key={category.text}
