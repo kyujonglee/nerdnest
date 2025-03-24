@@ -1,4 +1,4 @@
-import { nextui } from "@nextui-org/theme";
+import { heroui } from "@heroui/theme";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -7,7 +7,7 @@ const config: Config = {
     "./services/**/*.{js,ts,jsx,tsx,mdx}",
     "./shared/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
     "from-[#6886F8]",
@@ -27,7 +27,7 @@ const config: Config = {
   theme: {},
   darkMode: "class",
   plugins: [
-    nextui({
+    heroui({
       themes: {
         light: {
           colors: {

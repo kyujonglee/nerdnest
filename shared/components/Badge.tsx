@@ -1,5 +1,5 @@
 import { UserType } from "@/shared/types/user.types";
-import { cn } from "@nextui-org/theme";
+import { cn } from "@heroui/theme";
 import { Brush, ChevronsLeftRight, UserPen } from "lucide-react";
 
 type BadgeProps = {

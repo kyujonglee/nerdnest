@@ -1,6 +1,6 @@
 import React from "react";
 import { Heart, MessageCircle, Clock } from "lucide-react";
-import { cn } from "@nextui-org/theme";
+import { cn } from "@heroui/theme";
 import Badge from "@/shared/components/Badge";
 import { UserType } from "@/shared/types/user.types";
 import { UserTypeMap } from "@/shared/const/user.const";
