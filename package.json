@@ -14,6 +14,7 @@
     "@heroui/system": "2.4.16-beta.1",
     "@heroui/theme": "2.4.16-beta.1",
     "@tailwindcss/postcss": "^4.1.5",
+    "better-auth": "^1.2.7",
     "framer-motion": "12.9.4",
     "lucide-react": "^0.427.0",
     "next": "^15.3.1",
