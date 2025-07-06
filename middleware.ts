@@ -2,7 +2,7 @@ import { auth } from "./auth";
 
 export default auth((req) => {
   // 인증이 필요한 라우트들 정의
-  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
+  const protectedRoutes = ["/profile", "/settings"];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     req.nextUrl.pathname.startsWith(route)

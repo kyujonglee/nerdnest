@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { signIn } from "next-auth/react";
 import { apiClient } from "@/lib/api-client";
 import type {
   UserInfo,
@@ -61,9 +62,26 @@ export const useSignUp = () => {
       console.log("🔄 회원가입 API 호출 시작:", data);
       return authApi.signUp(data);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       // 회원가입 성공 시 필요한 후처리
       console.log("✅ 회원가입이 완료되었습니다:", data);
+
+      // 회원가입 성공 후 자동 로그인
+      try {
+        const result = await signIn("credentials", {
+          email: variables.username, // variables에서 username 사용
+          password: variables.password, // variables에서 password 사용
+          redirect: false,
+        });
+
+        if (result?.ok) {
+          console.log("🎉 자동 로그인 성공!");
+        } else {
+          console.warn("⚠️ 자동 로그인 실패:", result?.error);
+        }
+      } catch (error) {
+        console.error("❌ 자동 로그인 중 오류:", error);
+      }
     },
     onError: (error) => {
       console.error("❌ 회원가입 실패:", error);

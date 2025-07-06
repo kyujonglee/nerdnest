@@ -75,7 +75,7 @@ export default function Header() {
                       as="button"
                       className="transition-transform hover:scale-105"
                       size="sm"
-                      name={session.user?.name || "User"}
+                      name={session.user?.name?.slice(0, 1) || "User"}
                       src={session.user?.image || undefined}
                     />
                   </DropdownTrigger>
