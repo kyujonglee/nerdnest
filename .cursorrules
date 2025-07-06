@@ -1,0 +1,4 @@
+- hero ui를 사용
+- form을 다룰 때는 react-hook-form library이용
+    - zod resolver와 같이
+- API를 다룰 때는 @tanstack/react-query
