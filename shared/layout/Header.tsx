@@ -11,7 +11,7 @@ import {
   DropdownItem,
   Avatar,
 } from "@heroui/react";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings, PenTool } from "lucide-react";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -62,6 +62,15 @@ export default function Header() {
             ) : session ? (
               // 로그인된 상태
               <div className="flex items-center gap-4">
+                <Button
+                  as={Link}
+                  href="/boards/new"
+                  color="primary"
+                  startContent={<PenTool size={16} />}
+                  className="bg-[#598ADD] hover:bg-[#598ADD]/80"
+                >
+                  글쓰기
+                </Button>
                 <span className="text-sm text-gray-600">
                   안녕하세요,{" "}
                   <span className="font-bold text-[#598ADD]">

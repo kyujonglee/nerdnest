@@ -1,6 +1,11 @@
+"use client";
+
 import React from "react";
-import { Heart, MessageCircle, Clock } from "lucide-react";
+import { Heart, MessageCircle, Clock, PenTool } from "lucide-react";
 import { cn } from "@heroui/theme";
+import { Button } from "@heroui/button";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import Badge from "@/shared/components/Badge";
 import { UserType } from "@/shared/types/user.types";
 import { UserTypeMap } from "@/shared/const/user.const";
@@ -28,6 +33,7 @@ interface PostItemProps extends Post {
 }
 
 export default function MainBoards() {
+  const { data: session } = useSession();
   const boards: BoardColumnProps[] = [
     { title: "NEW", subtitle: "최신글", posts: newPosts },
     { title: "HOT", subtitle: "이번주 인기글", posts: hotPosts },
@@ -36,7 +42,29 @@ export default function MainBoards() {
   return (
     <div className="w-full flex justify-center">
       <section className="w-full max-w-6xl pt-[60px] pb-[60px]">
-        <div className="w-full mt-8 flex gap-12">
+        {/* 게시판 헤더 */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-[#121314]">커뮤니티 게시판</h2>
+            <p className="text-lg text-[#777777] font-medium mt-1">
+              IT 지식과 경험을 공유해보세요!
+            </p>
+          </div>
+          {session && (
+            <Button
+              as={Link}
+              href="/boards/new"
+              color="primary"
+              size="lg"
+              startContent={<PenTool size={18} />}
+              className="bg-[#598ADD] hover:bg-[#598ADD]/80"
+            >
+              게시글 작성
+            </Button>
+          )}
+        </div>
+
+        <div className="w-full flex gap-12">
           {boards.map((board) => (
             <BoardColumn key={board.title} {...board} />
           ))}

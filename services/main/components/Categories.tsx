@@ -7,10 +7,14 @@ export default function Categories() {
   return (
     <div className="w-full flex justify-center">
       <section className="w-full max-w-6xl pt-32 pb-[60px]">
-        <h2 className="text-3xl font-bold text-[#121314]">NN 카테고리</h2>
-        <h3 className="mt-1.5 text-lg text-[#777777] font-medium">
-          카테고리별 질문과 답변을 확인해보세요!
-        </h3>
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-[#121314]">NN 카테고리</h2>
+            <h3 className="mt-1.5 text-lg text-[#777777] font-medium">
+              카테고리별 질문과 답변을 확인해보세요!
+            </h3>
+          </div>
+        </div>
 
         <div className="mt-12 flex items-center justify-around flex-wrap">
           {CATEGORIES.map((category) => (

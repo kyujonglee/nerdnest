@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import localFont from "next/font/local";
 import Header from "@/shared/layout/Header";
 import Footer from "@/shared/layout/Footer";
+import FloatingWriteButton from "@/shared/components/FloatingWriteButton";
 
 const pretendard = localFont({
   src: "../public/fonts/PretendardVariable.woff2",
@@ -28,6 +29,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <FloatingWriteButton />
         </Providers>
       </body>
     </html>

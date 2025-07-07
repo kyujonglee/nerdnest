@@ -1,3 +1,5 @@
+import { getSession } from "next-auth/react";
+
 // API 에러 클래스
 export class ApiError extends Error {
   constructor(message: string, public status: number, public data?: any) {
@@ -49,7 +51,7 @@ class ApiClient {
     };
 
     // 토큰이 있다면 Authorization 헤더 추가
-    const token = this.getToken();
+    const token = await this.getToken();
     if (token) {
       defaultHeaders.Authorization = `Bearer ${token}`;
     }
@@ -115,12 +117,20 @@ class ApiClient {
     }
   }
 
-  // 토큰 가져오기 (localStorage 또는 쿠키에서)
-  private getToken(): string | null {
+  // 토큰 가져오기 (NextAuth 세션에서)
+  private async getToken(): Promise<string | null> {
     if (typeof window === "undefined") return null;
 
-    // 여기서는 localStorage를 사용, 필요에 따라 쿠키로 변경 가능
-    return localStorage.getItem("accessToken");
+    try {
+      // NextAuth 세션에서 토큰 가져오기
+      const session = await getSession();
+      return session?.accessToken || null;
+    } catch (error) {
+      console.warn("세션에서 토큰을 가져오는데 실패했습니다:", error);
+
+      // fallback: localStorage에서 토큰 가져오기 (기존 로그인 방식과의 호환성)
+      return localStorage.getItem("accessToken");
+    }
   }
 
   // GET 요청
