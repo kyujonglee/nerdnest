@@ -1,7 +1,7 @@
 import MainBoards from "@/services/main/components/MainBoards";
 import Categories from "./components/Categories";
 import MainSection from "./components/MainSection";
-import NerdPick from "@/services/main/components/NerdPick";
+import NerdKick from "@/services/main/components/NerdKick";
 import Recommendation from "@/services/main/components/Recommendation";
 
 export default function MainPage() {
@@ -10,7 +10,7 @@ export default function MainPage() {
       <MainSection />
       <Categories />
       <MainBoards />
-      <NerdPick />
+      <NerdKick />
       <Recommendation />
     </>
   );

@@ -134,3 +134,52 @@ export const useDeleteBoard = () => {
     },
   });
 };
+
+// 새로운 API 호출 함수들 추가
+const specialBoardApi = {
+  // Nerd's kick 조회 (킥 게시글)
+  getKickBoards: (): Promise<Board[]> =>
+    apiClient.get<Board[]>("/api/boards/kick"),
+
+  // 최신글 조회
+  getLatestBoards: (): Promise<Board[]> =>
+    apiClient.get<Board[]>("/api/boards/latest"),
+
+  // 인기글 조회 (좋아요 많은 글)
+  getLikeBoards: (): Promise<Board[]> =>
+    apiClient.get<Board[]>("/api/boards/like"),
+};
+
+// 새로운 Query Keys 추가
+export const specialBoardQueryKeys = {
+  kick: ["boards", "kick"] as const,
+  latest: ["boards", "latest"] as const,
+  like: ["boards", "like"] as const,
+} as const;
+
+// Nerd's kick 조회 훅
+export const useKickBoards = () => {
+  return useQuery({
+    queryKey: specialBoardQueryKeys.kick,
+    queryFn: specialBoardApi.getKickBoards,
+    staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
+  });
+};
+
+// 최신글 조회 훅
+export const useLatestBoards = () => {
+  return useQuery({
+    queryKey: specialBoardQueryKeys.latest,
+    queryFn: specialBoardApi.getLatestBoards,
+    staleTime: 1000 * 60 * 2, // 2분간 캐시 유지
+  });
+};
+
+// 인기글 조회 훅 (좋아요 많은 글)
+export const useLikeBoards = () => {
+  return useQuery({
+    queryKey: specialBoardQueryKeys.like,
+    queryFn: specialBoardApi.getLikeBoards,
+    staleTime: 1000 * 60 * 10, // 10분간 캐시 유지 (인기글은 자주 변하지 않으므로)
+  });
+};

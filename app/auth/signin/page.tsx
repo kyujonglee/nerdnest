@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/button";
 import { Checkbox, Input } from "@heroui/react";
@@ -55,6 +55,11 @@ export default function SignInPage() {
     if (result?.error) {
       setError(result.error);
       setIsLoading(false);
+    } else if (result?.success) {
+      // 세션을 강제로 갱신
+      await getSession();
+      router.push("/");
+      router.refresh();
     }
     // 성공 시 리다이렉션은 서버 액션에서 처리하므로 클라이언트에서는 별도 처리가 필요 없습니다.
     // 로딩 상태는 페이지가 이동되므로 굳이 false로 설정할 필요가 없습니다.

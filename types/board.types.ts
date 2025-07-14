@@ -9,6 +9,9 @@ export interface Board {
   likeCount: number;
   createdAt: string;
   categoryName: string;
+  writerName: string;
+  writerJob: string;
+  writerLevel: number;
 }
 
 // 게시글 생성 요청 타입
