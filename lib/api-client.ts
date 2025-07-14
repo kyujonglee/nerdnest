@@ -22,18 +22,12 @@ class ApiClient {
   constructor(baseURL?: string) {
     // 개발환경에서는 Next.js API Routes 프록시 사용 (CORS 문제 해결)
     // 프로덕션에서는 직접 외부 API 서버 사용
-    const isDevelopment = process.env.NODE_ENV === "development";
 
     if (baseURL) {
       this.baseURL = baseURL;
-    } else if (isDevelopment) {
+    } else {
       // 개발환경에서는 Next.js API Routes 프록시 사용
       this.baseURL = "/api";
-    } else {
-      // 프로덕션에서는 직접 백엔드 API 사용
-      this.baseURL = `${
-        process.env.NEXT_PUBLIC_API_BASE_URL || "https://nerdnest.onrender.com"
-      }/api`;
     }
 
     console.log("API Client initialized with baseURL:", this.baseURL);
