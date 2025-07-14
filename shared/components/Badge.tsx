@@ -1,6 +1,11 @@
 import { UserType } from "@/shared/types/user.types";
 import { cn } from "@heroui/theme";
-import { Brush, ChevronsLeftRight, UserPen } from "lucide-react";
+import {
+  Brush,
+  ChevronsLeftRight,
+  MoreHorizontal,
+  UserPen,
+} from "lucide-react";
 
 type BadgeProps = {
   userType: UserType;
@@ -19,6 +24,7 @@ export default function Badge({
     designer: Brush,
     developer: ChevronsLeftRight,
     projectManager: UserPen,
+    etc: MoreHorizontal,
   };
   const Icon = icon[userType];
 
@@ -26,12 +32,14 @@ export default function Badge({
     designer: "bg-[#FC9E4F]",
     developer: "bg-[#0BB694]",
     projectManager: "bg-[#E4535F]",
+    etc: "bg-[#A0A0A0]",
   };
 
   const color: Record<UserType, string> = {
     designer: "#653F20",
     developer: "#04493B",
     projectManager: "#5B2126",
+    etc: "#404040",
   };
 
   return (
