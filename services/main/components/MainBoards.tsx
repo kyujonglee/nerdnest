@@ -1,10 +1,17 @@
+"use client";
+
 import React from "react";
-import { Heart, MessageCircle, Clock } from "lucide-react";
+import { Heart, MessageCircle, Clock, PenTool } from "lucide-react";
 import { cn } from "@heroui/theme";
+import { useSession } from "next-auth/react";
 import Badge from "@/shared/components/Badge";
 import { UserType } from "@/shared/types/user.types";
 import { UserTypeMap } from "@/shared/const/user.const";
 import FullHeart from "@/shared/components/FullHeart";
+import { useLatestBoards, useLikeBoards } from "@/services/board/board.hooks";
+import { Board } from "@/types/board.types";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
 
 interface Post {
   title: string;
@@ -27,7 +34,34 @@ interface PostItemProps extends Post {
   authorType: UserType;
 }
 
+const jobToUserType = (job: string): UserType => {
+  if (job === "개발자") return "developer";
+  if (job === "디자이너") return "designer";
+  if (job === "기획/PM") return "projectManager";
+  return "etc";
+};
+
 export default function MainBoards() {
+  const { data: session } = useSession();
+  const { data: latestBoardsData } = useLatestBoards();
+  const { data: likeBoardsData } = useLikeBoards();
+
+  const mapBoardToPost = (board: Board): Post => ({
+    title: board.title,
+    author: board.writerName,
+    time: formatDistanceToNow(new Date(board.createdAt), {
+      addSuffix: true,
+      locale: ko,
+    }),
+    likes: board.likeCount,
+    comments: 0, // API 응답에 commentCount가 없으므로 0으로 설정
+    authorType: jobToUserType(board.writerJob),
+    experience: board.writerLevel,
+  });
+
+  const newPosts: Post[] = latestBoardsData?.map(mapBoardToPost) ?? [];
+  const hotPosts: Post[] = likeBoardsData?.map(mapBoardToPost) ?? [];
+
   const boards: BoardColumnProps[] = [
     { title: "NEW", subtitle: "최신글", posts: newPosts },
     { title: "HOT", subtitle: "이번주 인기글", posts: hotPosts },
@@ -36,7 +70,19 @@ export default function MainBoards() {
   return (
     <div className="w-full flex justify-center">
       <section className="w-full max-w-6xl pt-[60px] pb-[60px]">
-        <div className="w-full mt-8 flex gap-12">
+        {/* 게시판 헤더 */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-[#121314]">
+              커뮤니티 게시판
+            </h2>
+            <p className="text-lg text-[#777777] font-medium mt-1">
+              IT 지식과 경험을 공유해보세요!
+            </p>
+          </div>
+        </div>
+
+        <div className="w-full flex gap-12">
           {boards.map((board) => (
             <BoardColumn key={board.title} {...board} />
           ))}
@@ -82,10 +128,10 @@ function PostItem({
       )}
     >
       <div className="flex flex-col gap-2">
-        <span className="font-bold text-[#9AA4B2]">
+        <span className="text-2xl font-bold text-[#9AA4B2]">
           {number.toString().padStart(2, "0")}
         </span>
-        <h5 className="flex-1 font-medium flex-grow text-ellipsis overflow-hidden whitespace-nowrap max-w-sm">
+        <h5 className="flex-1 text-[22px] font-medium flex-grow text-ellipsis overflow-hidden whitespace-nowrap max-w-sm">
           {title}
         </h5>
       </div>
@@ -98,10 +144,10 @@ function PostItem({
           </span>
         </div>
         <div className="flex items-center gap-3 text-[#444444] font-medium">
-          <div className="flex items-center gap-1">
+          {/* <div className="flex items-center gap-1">
             <Clock size={20} />
             <span>{time}</span>
-          </div>
+          </div> */}
           <div className="flex items-center gap-1">
             {likes > 0 ? <FullHeart /> : <Heart size={20} />}
             <span>{likes}</span>
@@ -115,84 +161,3 @@ function PostItem({
     </li>
   );
 }
-
-const newPosts: Post[] = [
-  {
-    title: "마케팅 업무를 시작하는데 나아아갈까요?",
-    author: "홍길동",
-    authorType: "designer",
-    time: "3분전",
-    likes: 0,
-    comments: 0,
-    experience: 1,
-  },
-  {
-    title:
-      "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어고민이 있어고민이 있어고민이 있어",
-    author: "홍길동",
-    authorType: "developer",
-    time: "3분전",
-    likes: 0,
-    comments: 0,
-    experience: 1,
-  },
-  {
-    title:
-      "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어고민이 있어고민이 있어고민이 있어",
-    author: "홍길동",
-    authorType: "projectManager",
-    time: "3분전",
-    likes: 0,
-    comments: 0,
-    experience: 1,
-  },
-  {
-    title:
-      "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어고민이 있어고민이 있어고민이 있어",
-    author: "홍길동",
-    authorType: "designer",
-    time: "3분전",
-    likes: 0,
-    comments: 0,
-    experience: 1,
-  },
-];
-
-const hotPosts: Post[] = [
-  {
-    title: "마케팅 업무를 시작하는데 나아아갈까요?",
-    author: "홍길동",
-    authorType: "designer",
-    time: "3분전",
-    likes: 2,
-    comments: 12,
-    experience: 1,
-  },
-  {
-    title: "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어...",
-    author: "홍길동",
-    authorType: "developer",
-    time: "3분전",
-    likes: 0,
-    comments: 3,
-    experience: 1,
-  },
-  {
-    title: "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어...",
-    author: "홍길동",
-    authorType: "projectManager",
-    time: "3분전",
-    likes: 0,
-    comments: 3,
-    experience: 1,
-  },
-  {
-    title: "3년3개월 경력자 퇴사 후 재입사 관련하여 고민이 있어",
-    author: "홍길동",
-    authorType: "designer",
-    time: "3분전",
-    likes: 0,
-    comments: 3,
-    experience: 1,
-  },
-];

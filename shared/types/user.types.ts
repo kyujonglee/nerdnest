@@ -1,1 +1,1 @@
-export type UserType = "designer" | "developer" | "projectManager";
+export type UserType = "designer" | "developer" | "projectManager" | "etc";

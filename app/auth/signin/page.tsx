@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/button";
 import { Checkbox, Input } from "@heroui/react";
@@ -11,6 +11,7 @@ import * as z from "zod";
 import { PasswordInput } from "@/components/auth";
 import Link from "next/link";
 import Image from "next/image";
+import { signInWithCredentials } from "@/services/auth/actions";
 
 const signInSchema = z.object({
   email: z.string().min(1, "아이디 또는 비밀번호를 잘못 입력하셨습니다."),
@@ -44,24 +45,24 @@ export default function SignInPage() {
     setIsLoading(true);
     setError("");
 
-    try {
-      const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    // rememberMe는 next-auth에서 직접 처리하지 않으므로, 필요 시 별도 로직 추가
 
-      if (result?.error) {
-        setError("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
-      } else {
-        router.push("/");
-        router.refresh();
-      }
-    } catch (error) {
-      setError("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
-    } finally {
+    const result = await signInWithCredentials(formData);
+
+    if (result?.error) {
+      setError(result.error);
       setIsLoading(false);
+    } else if (result?.success) {
+      // 세션을 강제로 갱신
+      await getSession();
+      router.push("/");
+      router.refresh();
     }
+    // 성공 시 리다이렉션은 서버 액션에서 처리하므로 클라이언트에서는 별도 처리가 필요 없습니다.
+    // 로딩 상태는 페이지가 이동되므로 굳이 false로 설정할 필요가 없습니다.
   };
 
   const handleSocialLogin = (provider: string) => {
