@@ -16,13 +16,13 @@ export default function Categories() {
           </div>
         </div>
 
-        <div className="mt-12 flex items-center justify-around flex-wrap">
+        <div className="mt-12 flex items-center gap-4 flex-wrap">
           {CATEGORIES.map((category) => (
             <Link
               key={category.text}
-              href="/"
+              href={category.href}
               className={cn(
-                "relative group p-6 rounded-3xl h-[290px] w-[200px]",
+                "relative group p-6 rounded-3xl h-[290px] w-[230px]",
                 `bg-gradient-to-b from-[${category.gradientFrom}] to-[${category.gradientTo}]`
               )}
             >
@@ -56,38 +56,31 @@ const CATEGORIES: {
   imageFileName: string;
 }[] = [
   {
-    href: "/",
+    href: "/boards/planning",
     gradientFrom: "#6886F8",
     gradientTo: "#6455EC",
     text: "기획",
     imageFileName: "planning",
   },
   {
-    href: "/",
+    href: "/boards/design",
     gradientFrom: "#FBAB3C",
     gradientTo: "#FB8B66",
     text: "디자인",
     imageFileName: "design",
   },
   {
-    href: "/",
+    href: "/boards/development",
     gradientFrom: "#0BBC86",
     gradientTo: "#0AA9AC",
     text: "개발",
     imageFileName: "development",
   },
   {
-    href: "/",
+    href: "/boards/community",
     gradientFrom: "#ED5F6B",
     gradientTo: "#D23B47",
     text: "커뮤니티",
     imageFileName: "community",
-  },
-  {
-    href: "/",
-    gradientFrom: "#1497F2",
-    gradientTo: "#515AE0",
-    text: "Tip",
-    imageFileName: "tip",
   },
 ];
