@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Card, CardBody, Button, Textarea, Divider } from "@heroui/react";
 import { MessageCircle, Send, Edit3, Trash2, MoreVertical } from "lucide-react";
 import { formatDate } from "@/shared/utils/dateUtils";
-import { 
-  useComments, 
-  useCreateComment, 
-  useUpdateComment, 
-  useDeleteComment 
+import {
+  useComments,
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
 } from "../board.hooks";
 import { Comment } from "@/types/board.types";
 import { useSession } from "next-auth/react";
@@ -79,7 +79,9 @@ export default function CommentSection({ boardId }: CommentSectionProps) {
           </div>
         ) : (
           <div className="mb-6 p-4 bg-gray-50 rounded-lg text-center">
-            <p className="text-gray-600 mb-3">로그인 후 댓글을 작성할 수 있습니다.</p>
+            <p className="text-gray-600 mb-3">
+              로그인 후 댓글을 작성할 수 있습니다.
+            </p>
             <Button color="primary" size="sm">
               로그인하기
             </Button>
@@ -101,7 +103,7 @@ export default function CommentSection({ boardId }: CommentSectionProps) {
               <CommentItem
                 key={comment.id}
                 comment={comment}
-                currentUserId={session?.user?.name}
+                currentUserId={session?.user?.username || session?.user?.name || undefined}
               />
             ))
           )}

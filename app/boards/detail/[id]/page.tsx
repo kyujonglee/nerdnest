@@ -1,13 +1,14 @@
 import BoardDetailPage from "@/services/board/components/BoardDetailPage";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function BoardDetailRoute({ params }: PageProps) {
-  const boardId = parseInt(params.id, 10);
+export default async function BoardDetailRoute({ params }: PageProps) {
+  const { id } = await params;
+  const boardId = parseInt(id, 10);
 
   // ID가 유효하지 않은 경우 404 처리
   if (isNaN(boardId) || boardId <= 0) {
@@ -28,7 +29,8 @@ export default function BoardDetailRoute({ params }: PageProps) {
 
 // 메타데이터 생성 (SEO를 위한)
 export async function generateMetadata({ params }: PageProps) {
-  const boardId = parseInt(params.id, 10);
+  const { id } = await params;
+  const boardId = parseInt(id, 10);
 
   if (isNaN(boardId) || boardId <= 0) {
     return {
