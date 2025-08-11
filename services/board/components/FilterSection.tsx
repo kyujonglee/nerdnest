@@ -3,6 +3,7 @@ import { PenTool } from "lucide-react";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { SORT_OPTIONS } from "../constants/board.constants";
+import { getCategoryId } from "@/shared/utils/categoryUtils";
 
 interface FilterSectionProps {
   keywordValue: string;
@@ -10,6 +11,7 @@ interface FilterSectionProps {
   onKeywordChange: (value: string) => void;
   onSearch: () => void;
   onSortChange: (value: string) => void;
+  category?: string;
 }
 
 export default function FilterSection({
@@ -18,7 +20,10 @@ export default function FilterSection({
   onKeywordChange,
   onSearch,
   onSortChange,
+  category,
 }: FilterSectionProps) {
+  // 카테고리 ID 가져오기
+  const categoryId = category ? getCategoryId(category) : null;
   return (
     <div className="w-full px-6 py-8 bg-white">
       <div className="max-w-6xl mx-auto">
@@ -39,7 +44,7 @@ export default function FilterSection({
           <div className="flex items-center gap-3 justify-end">
             <Button
               as={Link}
-              href="/boards/new"
+              href={categoryId ? `/boards/new?categoryId=${categoryId}` : "/boards/new"}
               color="primary"
               startContent={<PenTool size={16} />}
               className="bg-[#598ADD] hover:bg-[#598ADD]/80"

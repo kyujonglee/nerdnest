@@ -67,6 +67,7 @@ export default function CategoryBoardsPage({
         onKeywordChange={setKeywordValue}
         onSearch={handleSearch}
         onSortChange={handleSortChange}
+        category={category}
       />
 
       {/* Content Area */}
