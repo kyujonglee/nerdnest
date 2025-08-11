@@ -11,7 +11,9 @@ async function handler(
   const apiPath = path.join("/");
 
   // 백엔드 API URL 구성
-  const backendUrl = `${BACKEND_BASE_URL}/${apiPath}`;
+  const url = new URL(request.url);
+  const queryString = url.search; // ?page=0&keyword=UX 형태
+  const backendUrl = `${BACKEND_BASE_URL}/${apiPath}${queryString}`;
 
   console.log("🔄 Proxying request:", {
     method: request.method,

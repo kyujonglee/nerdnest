@@ -6,6 +6,10 @@ import {
   UpdateBoardRequest,
   BoardListResponse,
   BoardListParams,
+  BoardDetail,
+  Comment,
+  CreateCommentRequest,
+  UpdateCommentRequest,
 } from "@/types/board.types";
 import {
   BoardsApiResponse,
@@ -33,6 +37,10 @@ const boardApi = {
   getBoard: (id: number): Promise<Board> =>
     apiClient.get<Board>(`/api/boards/${id}`),
 
+  // 게시글 상세 조회 (댓글 개수 포함)
+  getBoardDetail: (id: number): Promise<BoardDetail> =>
+    apiClient.get<BoardDetail>(`/api/boards/${id}/detail`),
+
   // 게시글 생성
   createBoard: (data: CreateBoardRequest): Promise<Board> =>
     apiClient.post<Board>("/api/boards", data),
@@ -46,6 +54,25 @@ const boardApi = {
     apiClient.delete<void>(`/api/boards/${id}`),
 };
 
+// 댓글 API 호출 함수들
+const commentApi = {
+  // 특정 게시글의 댓글 목록 조회
+  getComments: (boardId: number): Promise<Comment[]> =>
+    apiClient.get<Comment[]>(`/api/comments/board/${boardId}`),
+
+  // 댓글 생성
+  createComment: (data: CreateCommentRequest): Promise<Comment> =>
+    apiClient.post<Comment>("/api/comments", data),
+
+  // 댓글 수정
+  updateComment: (id: number, data: UpdateCommentRequest): Promise<Comment> =>
+    apiClient.put<Comment>(`/api/comments/${id}`, data),
+
+  // 댓글 삭제
+  deleteComment: (id: number): Promise<void> =>
+    apiClient.delete<void>(`/api/comments/${id}`),
+};
+
 // Query Keys
 export const boardQueryKeys = {
   all: ["boards"] as const,
@@ -54,6 +81,15 @@ export const boardQueryKeys = {
     [...boardQueryKeys.lists(), params] as const,
   details: () => [...boardQueryKeys.all, "detail"] as const,
   detail: (id: number) => [...boardQueryKeys.details(), id] as const,
+} as const;
+
+// 댓글 Query Keys
+export const commentQueryKeys = {
+  all: ["comments"] as const,
+  lists: () => [...commentQueryKeys.all, "list"] as const,
+  list: (boardId: number) => [...commentQueryKeys.lists(), boardId] as const,
+  details: () => [...commentQueryKeys.all, "detail"] as const,
+  detail: (id: number) => [...commentQueryKeys.details(), id] as const,
 } as const;
 
 // 게시글 목록 조회 훅
@@ -71,6 +107,16 @@ export const useBoard = (id: number) => {
     queryKey: boardQueryKeys.detail(id),
     queryFn: () => boardApi.getBoard(id),
     enabled: !!id, // id가 있을 때만 쿼리 실행
+  });
+};
+
+// 게시글 상세 조회 훅 (댓글 개수 포함)
+export const useBoardDetail = (id: number) => {
+  return useQuery({
+    queryKey: [...boardQueryKeys.detail(id), "detail"],
+    queryFn: () => boardApi.getBoardDetail(id),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
   });
 };
 
@@ -256,5 +302,84 @@ export const useCategoryBoards = ({
     enabled: !!categoryId, // categoryId가 있을 때만 실행
     staleTime: 5 * 60 * 1000, // 5분간 fresh 상태 유지
     gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
+  });
+};
+
+// === 댓글 관련 훅들 ===
+
+// 특정 게시글의 댓글 목록 조회 훅
+export const useComments = (boardId: number) => {
+  return useQuery({
+    queryKey: commentQueryKeys.list(boardId),
+    queryFn: () => commentApi.getComments(boardId),
+    enabled: !!boardId,
+    staleTime: 1000 * 60 * 2, // 2분간 캐시 유지
+  });
+};
+
+// 댓글 생성 훅
+export const useCreateComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: commentApi.createComment,
+    onSuccess: (newComment) => {
+      // 해당 게시글의 댓글 목록 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: commentQueryKeys.list(newComment.boardId),
+      });
+
+      // 게시글 상세 정보 캐시도 무효화 (댓글 개수 업데이트)
+      queryClient.invalidateQueries({
+        queryKey: [...boardQueryKeys.detail(newComment.boardId), "detail"],
+      });
+    },
+    onError: (error) => {
+      console.error("댓글 생성 실패:", error);
+    },
+  });
+};
+
+// 댓글 수정 훅
+export const useUpdateComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateCommentRequest }) =>
+      commentApi.updateComment(id, data),
+    onSuccess: (updatedComment) => {
+      // 해당 게시글의 댓글 목록 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: commentQueryKeys.list(updatedComment.boardId),
+      });
+    },
+    onError: (error) => {
+      console.error("댓글 수정 실패:", error);
+    },
+  });
+};
+
+// 댓글 삭제 훅
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: commentApi.deleteComment,
+    onSuccess: (_, deletedCommentId, context: any) => {
+      // 해당 게시글의 댓글 목록 캐시 무효화
+      if (context?.boardId) {
+        queryClient.invalidateQueries({
+          queryKey: commentQueryKeys.list(context.boardId),
+        });
+
+        // 게시글 상세 정보 캐시도 무효화 (댓글 개수 업데이트)
+        queryClient.invalidateQueries({
+          queryKey: [...boardQueryKeys.detail(context.boardId), "detail"],
+        });
+      }
+    },
+    onError: (error) => {
+      console.error("댓글 삭제 실패:", error);
+    },
   });
 };

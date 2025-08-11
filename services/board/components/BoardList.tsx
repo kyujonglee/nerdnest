@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import BoardCard from "./BoardCard";
 import BoardListSkeleton from "./BoardListSkeleton";
 import EmptyState from "./EmptyState";
@@ -17,6 +18,8 @@ export default function BoardList({
   isError, 
   error 
 }: BoardListProps) {
+  const router = useRouter();
+
   if (isLoading) {
     return <BoardListSkeleton />;
   }
@@ -29,16 +32,17 @@ export default function BoardList({
     return <EmptyState />;
   }
 
+  const handleBoardClick = (boardId: number) => {
+    router.push(`/boards/detail/${boardId}`);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {boards.map((board) => (
         <BoardCard
           key={board.id}
           board={board}
-          onPress={() => {
-            // TODO: 게시글 상세 페이지로 이동
-            console.log("Board clicked:", board.id);
-          }}
+          onPress={() => handleBoardClick(board.id)}
         />
       ))}
     </div>
