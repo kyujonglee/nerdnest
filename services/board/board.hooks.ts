@@ -7,6 +7,11 @@ import {
   BoardListResponse,
   BoardListParams,
 } from "@/types/board.types";
+import {
+  BoardsApiResponse,
+  Board as CategoryBoard,
+  CategoryBoardsParams,
+} from "@/shared/types/board";
 
 // API 호출 함수들
 const boardApi = {
@@ -135,6 +140,33 @@ export const useDeleteBoard = () => {
   });
 };
 
+// API Response를 UI에서 사용할 형태로 변환하는 함수
+function transformCategoryBoardData(apiData: BoardsApiResponse) {
+  const boards: CategoryBoard[] = apiData.content.map((item) => ({
+    id: item.id,
+    title: item.title,
+    content: item.content,
+    author: {
+      name: item.writerName,
+      job: item.writerJob,
+      level: item.writerLevel,
+    },
+    createdAt: item.createdAt,
+    viewCount: item.view,
+    commentCount: item.commentCount,
+    likeCount: item.likeCount,
+  }));
+
+  return {
+    boards,
+    totalPages: apiData.totalPages,
+    totalElements: apiData.totalElements,
+    currentPage: apiData.number,
+    isFirst: apiData.first,
+    isLast: apiData.last,
+  };
+}
+
 // 새로운 API 호출 함수들 추가
 const specialBoardApi = {
   // Nerd's kick 조회 (킥 게시글)
@@ -148,6 +180,31 @@ const specialBoardApi = {
   // 인기글 조회 (좋아요 많은 글)
   getLikeBoards: (): Promise<Board[]> =>
     apiClient.get<Board[]>("/api/boards/like"),
+
+  // 카테고리별 게시글 목록 조회
+  getCategoryBoards: async ({
+    categoryId,
+    page = 0,
+    keyword,
+  }: CategoryBoardsParams) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      ...(keyword && { keyword }),
+    });
+
+    const response = await fetch(
+      `/api/api/boards/category/${categoryId}?${params}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `게시글 목록을 불러오는데 실패했습니다: ${response.status}`
+      );
+    }
+
+    const data: BoardsApiResponse = await response.json();
+    return transformCategoryBoardData(data);
+  },
 };
 
 // 새로운 Query Keys 추가
@@ -155,6 +212,8 @@ export const specialBoardQueryKeys = {
   kick: ["boards", "kick"] as const,
   latest: ["boards", "latest"] as const,
   like: ["boards", "like"] as const,
+  categoryBoards: (categoryId: number, page: number, keyword?: string) =>
+    ["boards", "category", categoryId, page, keyword] as const,
 } as const;
 
 // Nerd's kick 조회 훅
@@ -181,5 +240,21 @@ export const useLikeBoards = () => {
     queryKey: specialBoardQueryKeys.like,
     queryFn: specialBoardApi.getLikeBoards,
     staleTime: 1000 * 60 * 10, // 10분간 캐시 유지 (인기글은 자주 변하지 않으므로)
+  });
+};
+
+// 카테고리별 게시글 조회 훅
+export const useCategoryBoards = ({
+  categoryId,
+  page = 0,
+  keyword,
+}: CategoryBoardsParams) => {
+  return useQuery({
+    queryKey: specialBoardQueryKeys.categoryBoards(categoryId, page, keyword),
+    queryFn: () =>
+      specialBoardApi.getCategoryBoards({ categoryId, page, keyword }),
+    enabled: !!categoryId, // categoryId가 있을 때만 실행
+    staleTime: 5 * 60 * 1000, // 5분간 fresh 상태 유지
+    gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
   });
 };

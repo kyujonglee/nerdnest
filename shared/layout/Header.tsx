@@ -36,20 +36,29 @@ export default function Header() {
               />
             </Link>
             <div className="flex items-center gap-9">
-              <Link href="/" className="hover:text-[#598ADD] transition-colors">
+              <Link
+                href="/boards/planning"
+                className="hover:text-[#598ADD] transition-colors"
+              >
                 기획
               </Link>
-              <Link href="/" className="hover:text-[#598ADD] transition-colors">
+              <Link
+                href="/boards/design"
+                className="hover:text-[#598ADD] transition-colors"
+              >
                 디자인
               </Link>
-              <Link href="/" className="hover:text-[#598ADD] transition-colors">
+              <Link
+                href="/boards/development"
+                className="hover:text-[#598ADD] transition-colors"
+              >
                 개발
               </Link>
-              <Link href="/" className="hover:text-[#598ADD] transition-colors">
+              <Link
+                href="/boards/community"
+                className="hover:text-[#598ADD] transition-colors"
+              >
                 커뮤니티
-              </Link>
-              <Link href="/" className="hover:text-[#598ADD] transition-colors">
-                Tip
               </Link>
             </div>
           </div>
@@ -62,15 +71,6 @@ export default function Header() {
             ) : session ? (
               // 로그인된 상태
               <div className="flex items-center gap-4">
-                <Button
-                  as={Link}
-                  href="/boards/new"
-                  color="primary"
-                  startContent={<PenTool size={16} />}
-                  className="bg-[#598ADD] hover:bg-[#598ADD]/80"
-                >
-                  글쓰기
-                </Button>
                 <span className="text-sm text-gray-600">
                   안녕하세요,{" "}
                   <span className="font-bold text-[#598ADD]">
